@@ -77,7 +77,7 @@ class ConfigGenerator extends GeneratorForAnnotation<BuildConfiguration> {
       }
       value = rawValue.toString();
     } else if (field.type.isDartCoreDouble) {
-      if(rawValue is! num){
+      if (rawValue is! num) {
         throw "$variableName should be a double, but got $rawValue (${rawValue.runtimeType})";
       }
       value = rawValue.toString();
