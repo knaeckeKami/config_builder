@@ -1,8 +1,8 @@
 name: config_builder
 description: Build your app config via code generation from .json files in a type safe way
 version: 0.0.1
-author:
-homepage:
+author: Martin Kamleithner
+homepage: https://github.com/knaeckeKami/config_builder
 
 environment:
   sdk: ">=2.1.0 <3.0.0"

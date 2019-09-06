@@ -17,7 +17,7 @@ Note: this is an experimental library. Use with caution!
 Define your configuration model:
 
 ```dart
-part 'config.g.dart' //use the <filename>.g.dart, where <filename> is the name of this dart file
+part 'config.g.dart'; //use the <filename>.g.dart, where <filename> is the name of this dart file
 
 @BuildConfiguration([
   ConfigFile(configName: "devConfig", path: "config.dev.json"),
