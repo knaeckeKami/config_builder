@@ -16,7 +16,7 @@ Note: this is an experimental library. Use with caution!
 
 Define your configuration model:
 
-```
+```dart
 part 'config.g.dart' //use the <filename>.g.dart, where <filename> is the name of this dart file
 
 @BuildConfiguration([
@@ -37,7 +37,7 @@ The generated code will assume that such a constructor exists.
 
 Add your configuration-json file:
 
-```
+```json
 {
   "name" : "devApp",
   "value": 1,
@@ -55,7 +55,7 @@ Now you can access your config object for example via different entry points in 
 
 `main.dev.dart`:
 
-```
+```dart
 import 'config.dart';
 
 void main() => printConfig(devConfig);
@@ -63,7 +63,7 @@ void main() => printConfig(devConfig);
 
 `main.test.dart`:
 
-```
+```dart
 import 'config.dart';
 
 void main() => printConfig(testConfig);
