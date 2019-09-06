@@ -1,0 +1,16 @@
+# Read about `build.yaml` at https://pub.dev/packages/build_config
+builders:
+  # name of the builder
+  config_builder:
+    # library URI containing the builder
+    import: "package:config_builder/config_builder.dart"
+    # Name of the function in the above library to call.
+    builder_factories: ["configBuilder"]
+    # The mapping from the source extension to the generated file extension
+    build_extensions: {".dart": [".config_builder.g.part"]}
+    # Will automatically run on any package that depends on it
+    auto_apply: dependents
+    # Generate the output directly into the package, not to a hidden cache dir
+    build_to: cache
+    applies_builders: ["source_gen|combining_builder"]
+
