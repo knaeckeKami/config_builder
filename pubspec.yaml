@@ -1,5 +1,5 @@
 name: config_builder
-description: Build your app config via code gen from .env files
+description: Build your app config via code generation from .json files in a type safe way
 version: 0.0.1
 author:
 homepage:
@@ -11,7 +11,6 @@ dependencies:
   source_gen: ^0.9.4+4
 
 dev_dependencies:
-  code_builder: 3.2.0
 
 # For information on the generic Dart part of this file, see the
 # following page: https://dart.dev/tools/pub/pubspec

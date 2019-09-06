@@ -1,5 +1,6 @@
 {
   "name" : "ProdApp",
-  "value": 3,
-  "environment" : "Prod"
+  "value": 2,
+  "environment" : "Prod",
+  "number": 3.14
 }

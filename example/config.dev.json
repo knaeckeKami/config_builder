@@ -1,5 +1,6 @@
 {
   "name" : "devApp",
-  "value": 1,
-  "environment" : "Dev"
+  "value": 3,
+  "environment" : "Dev",
+  "number" : 1.24
 }

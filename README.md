@@ -2,7 +2,7 @@
 
 Build your app config via code generation from .json files. Type-Safe and no unnecessary IO/Parsing on app-startup!
 
-Note: this is an experimental, largely untested library. Use with caution!
+Note: this is an experimental library. Use with caution!
 
 ## Features
 
@@ -68,3 +68,8 @@ import 'config.dart';
 
 void main() => printConfig(testConfig);
 ```
+
+## known issues
+
+- build_runner caches the result and won't collect changes in your config files if none of your source files changed since the last build
+I'll look into how this can be fixes. In the meantime, just add a new line somewhere in your config.dart file to force a new build.

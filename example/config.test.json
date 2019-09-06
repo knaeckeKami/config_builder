@@ -1,5 +1,6 @@
 {
   "name" : "testApp",
   "value": 2,
-  "environment" : "Test"
+  "environment" : "Test",
+  "number" : -4
 }

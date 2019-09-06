@@ -65,6 +65,7 @@ class ConfigGenerator extends GeneratorForAnnotation<BuildConfiguration> {
     }
     String value;
     if (field.type.isDartCoreString) {
+      //TODO properly escape the string
       value = 'r"""' + rawValue.toString() + '"""';
     } else if (field.type.isDartCoreBool) {
       if (rawValue is! bool) {
@@ -77,7 +78,10 @@ class ConfigGenerator extends GeneratorForAnnotation<BuildConfiguration> {
       }
       value = rawValue.toString();
     } else if (field.type.isDartCoreDouble) {
-      value = double.parse(rawValue).toString();
+      if(rawValue is! num){
+        throw "$variableName should be a double, but got $rawValue (${rawValue.runtimeType})";
+      }
+      value = rawValue.toString();
     } else if (field.type.element.runtimeType.toString() == "EnumElementImpl") {
       value = "${field.type.name}.$rawValue";
     } else {

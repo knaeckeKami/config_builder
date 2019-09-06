@@ -16,8 +16,9 @@ class Config{
   final String name;
   final int value;
   final Environment environment;
+  final double number;
 
-  const Config({this.name, this.value, this.environment});
+  const Config({this.name, this.value, this.environment, this.number});
 
 
 }
