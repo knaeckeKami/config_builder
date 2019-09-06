@@ -27,7 +27,6 @@ class ConfigGenerator extends GeneratorForAnnotation<BuildConfiguration> {
       final String code = generateCodeForFile(configFile, classElement);
       buffer.write(code);
     }
-    print(buffer.toString());
     return buffer.toString();
   }
 

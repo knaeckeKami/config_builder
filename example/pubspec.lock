@@ -107,7 +107,7 @@ packages:
     source: hosted
     version: "1.14.12"
   config_builder:
-    dependency: "direct main"
+    dependency: "direct dev"
     description:
       path: ".."
       relative: true

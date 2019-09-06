@@ -2,7 +2,6 @@ import 'package:config_builder/annotations/config.dart';
 
 part 'config.g.dart';
 
-
 enum Environment {
   Dev, Test, Prod
 }
