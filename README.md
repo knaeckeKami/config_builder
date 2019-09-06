@@ -1,4 +1,8 @@
+[![Pub Package](https://img.shields.io/pub/v/config_builder.svg)](https://pub.dartlang.org/packages/config_builder)
+
+
 # config_builder
+
 
 Build your app config via code generation from .json files. Type-Safe and no unnecessary IO/Parsing on app-startup!
 
