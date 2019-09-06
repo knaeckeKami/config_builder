@@ -14,6 +14,14 @@ Note: this is an experimental library. Use with caution!
 
 ## How to use
 
+Add to your devDependencies (see example):
+
+```yaml
+dev_dependencies:
+  build_runner: <version>
+  config_builder: <version>
+```
+
 Define your configuration model:
 
 ```dart
@@ -45,7 +53,6 @@ Add your configuration-json file:
 }
 ```
 
-Add `build_runner` to your `devDependencies` (see example App).
 
 Run the code generation via 
 
