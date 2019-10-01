@@ -1,7 +1,7 @@
 name: config_builder
 description: Build your app config via code generation from .json files in a type safe way
-version: 0.0.2
-author: Martin Kamleithner <martin@diagnosia.com>
+version: 0.2.0
+author: Martin Kamleithner <martin.kamleithner@gmail.com>
 homepage: https://github.com/knaeckeKami/config_builder
 
 environment:
@@ -9,7 +9,7 @@ environment:
 
 dependencies:
   source_gen: ^0.9.4+4
-  analyzer: ^0.38.2
+  analyzer: ^0.36.4
   build: ^1.1.6
 
 dev_dependencies:
