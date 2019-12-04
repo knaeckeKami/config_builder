@@ -1,3 +1,11 @@
+## [0.3.0]
+
+Use analyzer ^0.38.0 and newer source\_gen versions. built\_value and json\_serializable support this version by now.
+
+## [0.2.0]
+
+Use analyizer ^0.36.4 in order to be compatible to built\_value
+
 ## [0.1.0] 
 
 Use analyzer >= 0.37.0
