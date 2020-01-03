@@ -15,7 +15,7 @@ class ConfigGenerator extends GeneratorForAnnotation<BuildConfiguration> {
       throw 'This annotation can only be used on classes. Offending Element: $element';
     }
     final classElement = element as ClassElement;
-    final configList = annotation.read("configFiles")?.listValue;
+    final configList = annotation.read('configFiles')?.listValue;
 
     if (configList == null || configList.isEmpty) {
       throw 'configFiles list cannot be empty!  Offending Element: $element';
@@ -24,7 +24,7 @@ class ConfigGenerator extends GeneratorForAnnotation<BuildConfiguration> {
     final buffer = StringBuffer();
 
     for (final configFile in configList) {
-      final String code = generateCodeForFile(configFile, classElement);
+      final code = generateCodeForFile(configFile, classElement);
       buffer.write(code);
     }
     return buffer.toString();
@@ -33,7 +33,7 @@ class ConfigGenerator extends GeneratorForAnnotation<BuildConfiguration> {
   String generateCodeForFile(DartObject configFile, ClassElement classElement) {
     final filePath = configFile.getField('path')?.toStringValue();
     if (filePath == null) {
-      throw "configFiles must have a valid path and configName parameter! Offending Element: $classElement";
+      throw 'configFiles must have a valid path and configName parameter! Offending Element: $classElement';
     }
     final file = File(filePath);
     if (!file.existsSync()) {
@@ -44,7 +44,7 @@ class ConfigGenerator extends GeneratorForAnnotation<BuildConfiguration> {
 
     final configName = configFile.getField('configName')?.toStringValue();
     if (configName == null) {
-      throw "configFiles must have a valid path and configName parameter! Offending Element: $classElement";
+      throw 'configFiles must have a valid path and configName parameter! Offending Element: $classElement';
     }
     return generateField(configName, classElement, parsedConfig);
   }
@@ -60,7 +60,7 @@ class ConfigGenerator extends GeneratorForAnnotation<BuildConfiguration> {
       ClassElement element, String variableName, dynamic rawValue) {
     final field = element.getField(variableName.trim());
     if (field == null) {
-      throw ("field not found: $variableName");
+      throw ('field not found: $variableName');
     }
     String value;
     if (field.type.isDartCoreString) {
@@ -68,24 +68,24 @@ class ConfigGenerator extends GeneratorForAnnotation<BuildConfiguration> {
       value = 'r"""' + rawValue.toString() + '"""';
     } else if (field.type.isDartCoreBool) {
       if (rawValue is! bool) {
-        throw "$variableName should be a bool, but got $rawValue (${rawValue.runtimeType})";
+        throw '$variableName should be a bool, but got $rawValue (${rawValue.runtimeType})';
       }
       value = rawValue.toString();
     } else if (field.type.isDartCoreInt) {
       if (rawValue is! int) {
-        throw "$variableName should be an int, but got $rawValue (${rawValue.runtimeType})";
+        throw '$variableName should be an int, but got $rawValue (${rawValue.runtimeType})';
       }
       value = rawValue.toString();
     } else if (field.type.isDartCoreDouble) {
       if (rawValue is! num) {
-        throw "$variableName should be a double, but got $rawValue (${rawValue.runtimeType})";
+        throw '$variableName should be a double, but got $rawValue (${rawValue.runtimeType})';
       }
       value = rawValue.toString();
     } else if (field.type.element.runtimeType.toString() == "EnumElementImpl") {
       value = "${field.type.name}.$rawValue";
     } else {
-      throw "unsupported type: ${field.type}";
+      throw 'unsupported type: ${field.type}';
     }
-    return "$variableName:$value";
+    return '$variableName:$value';
   }
 }

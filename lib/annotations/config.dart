@@ -1,10 +1,8 @@
-
-class BuildConfiguration{
+class BuildConfiguration {
   final List<ConfigFile> configFiles;
 
   const BuildConfiguration(this.configFiles);
 }
-
 
 class ConfigFile {
   final String configName;
@@ -12,4 +10,3 @@ class ConfigFile {
 
   const ConfigFile({this.configName, this.path});
 }
-
