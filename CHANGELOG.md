@@ -1,3 +1,7 @@
+## [0.4.0+1]
+
+Lint fixes
+
 ## [0.4.0]
 
 Use analyzer ^0.39.0.

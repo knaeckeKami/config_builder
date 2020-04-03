@@ -2,12 +2,15 @@ import 'dart:convert';
 import 'dart:io';
 
 import 'package:analyzer/dart/constant/value.dart';
-import 'package:config_builder/annotations/config.dart';
 import 'package:analyzer/dart/element/element.dart';
 import 'package:build/build.dart';
+import 'package:config_builder/annotations/config.dart';
 import 'package:source_gen/source_gen.dart';
 
 class ConfigGenerator extends GeneratorForAnnotation<BuildConfiguration> {
+
+  File currentConfigFile;
+
   @override
   String generateForAnnotatedElement(
       Element element, ConstantReader annotation, BuildStep buildStep) {
@@ -35,8 +38,8 @@ class ConfigGenerator extends GeneratorForAnnotation<BuildConfiguration> {
     if (filePath == null) {
       throw 'configFiles must have a valid path and configName parameter! Offending Element: $classElement';
     }
-    final file = File(filePath);
-    if (!file.existsSync()) {
+    currentConfigFile = File(filePath);
+    if (!currentConfigFile.existsSync()) {
       throw "$filePath isn't readable!";
     }
     final configAsString = File(filePath).readAsStringSync();
@@ -52,17 +55,18 @@ class ConfigGenerator extends GeneratorForAnnotation<BuildConfiguration> {
   String generateField(String variableName, ClassElement classElement,
       Map<String, dynamic> parsedConfig) {
     return """const $variableName = ${classElement.name}(
-  ${parsedConfig.entries.map((pair) => generateVariable(classElement, pair.key, pair.value)).join(",")}
+  ${parsedConfig.entries.map((pair) => generateValueForVariable(classElement, pair.key, pair.value)).join(",")}
   );""";
   }
 
-  String generateVariable(
+  String generateValueForVariable(
       ClassElement element, String variableName, dynamic rawValue) {
     final field = element.getField(variableName.trim());
     if (field == null) {
-      throw ('field not found: $variableName');
+      throw ('field $variableName for class $element, but it was set in your config json file $currentConfigFile!');
     }
     String value;
+    final fieldElement = field.type.element;
     if (field.type.isDartCoreString) {
       //TODO properly escape the string
       value = 'r"""' + rawValue.toString() + '"""';
@@ -81,8 +85,8 @@ class ConfigGenerator extends GeneratorForAnnotation<BuildConfiguration> {
         throw '$variableName should be a double, but got $rawValue (${rawValue.runtimeType})';
       }
       value = rawValue.toString();
-    } else if (field.type.element.runtimeType.toString() == "EnumElementImpl") {
-      value = "${field.type.name}.$rawValue";
+    } else if (fieldElement is ClassElement && fieldElement.isEnum) {
+      value = '${field.type.name}.$rawValue';
     } else {
       throw 'unsupported type: ${field.type}';
     }
