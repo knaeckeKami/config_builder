@@ -1,6 +1,6 @@
 name: config_builder
 description: Build your app config via code generation from .json files in a type safe way
-version: 0.4.0+1
+version: 0.5.0
 author: Martin Kamleithner <martin.kamleithner@gmail.com>
 homepage: https://github.com/knaeckeKami/config_builder
 
