@@ -1,3 +1,8 @@
+## [0.5.0]
+
+Add better error messages
+Update dependency versions
+
 ## [0.4.0+1]
 
 Lint fixes
