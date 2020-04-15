@@ -5,9 +5,9 @@ part 'config.g.dart';
 enum Environment { Dev, Test, Prod }
 
 @BuildConfiguration([
-  ConfigFile(configName: "devConfig", path: "config.dev.json"),
-  ConfigFile(configName: "testConfig", path: "config.test.json"),
-  ConfigFile(configName: "prodConfig", path: "config.prod.json"),
+  ConfigFile(configName: "devConfig", path: "lib/secrets/config.dev.json"),
+  ConfigFile(configName: "testConfig", path: "lib/secrets/config.test.json"),
+  ConfigFile(configName: "prodConfig", path: "lib/secrets/config.prod.json"),
 ])
 class Config {
   final String name;

@@ -6,7 +6,7 @@
 
 Build your app config via code generation from .json files. Type-Safe and no unnecessary IO/Parsing on app-startup!
 
-Note: this is an experimental library. Use with caution!
+
 
 ## Features
 
@@ -32,8 +32,8 @@ Define your configuration model:
 part 'config.g.dart'; //use the <filename>.g.dart, where <filename> is the name of this dart file
 
 @BuildConfiguration([
-  ConfigFile(configName: "devConfig", path: "config.dev.json"),
-  ConfigFile(configName: "testConfig", path: "config.test.json"),
+  ConfigFile(configName: "devConfig", path: "lib/secrets/config.dev.json"),
+  ConfigFile(configName: "testConfig", path: "lib/secrets/config.test.json"),
 ])
 class Config{
   final String name;
@@ -47,7 +47,7 @@ class Config{
 Make sure the config-class has a `const` constructor with exclusively named parameters.
 The generated code will assume that such a constructor exists.
 
-Add your configuration-json file:
+Add your configuration-json file (must be saved in the lib/ directory):
 
 ```json
 {
@@ -61,6 +61,11 @@ Add your configuration-json file:
 Run the code generation via 
 
     flutter packages pub run build_runner build
+(flutter projects)    
+or
+ 
+     pub run build_runner build 
+(dart-only projects)   
     
 Now you can access your config object for example via different entry points in your app:
 
@@ -79,8 +84,3 @@ import 'config.dart';
 
 void main() => printConfig(testConfig);
 ```
-
-## known issues
-
-- build_runner caches the result and won't collect changes in your config files if none of your source files changed since the last build
-I'll look into how this can be fixes. In the meantime, just add a new line somewhere in your config.dart file to force a new build.

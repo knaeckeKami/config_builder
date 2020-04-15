@@ -6,14 +6,12 @@ import 'package:analyzer/dart/element/element.dart';
 import 'package:build/build.dart';
 import 'package:config_builder/annotations/config.dart';
 import 'package:source_gen/source_gen.dart';
+import 'package:glob/glob.dart';
 
 class ConfigGenerator extends GeneratorForAnnotation<BuildConfiguration> {
-
-  File currentConfigFile;
-
   @override
-  String generateForAnnotatedElement(
-      Element element, ConstantReader annotation, BuildStep buildStep) {
+  Future<String> generateForAnnotatedElement(
+      Element element, ConstantReader annotation, BuildStep buildStep) async {
     if (element is! ClassElement) {
       throw 'This annotation can only be used on classes. Offending Element: $element';
     }
@@ -27,43 +25,56 @@ class ConfigGenerator extends GeneratorForAnnotation<BuildConfiguration> {
     final buffer = StringBuffer();
 
     for (final configFile in configList) {
-      final code = generateCodeForFile(configFile, classElement);
+      final filePath = configFile.getField('path')?.toStringValue();
+      final assets = await buildStep
+          .findAssets(Glob(filePath, caseSensitive: true))
+          .toList();
+      if (assets.isEmpty) {
+        throw "no file found for argument $filePath";
+      }
+      if (assets.length > 1) {
+        throw "error: multiple files found that match $filePath!";
+      }
+      final assetId = assets.first;
+      final jsonString = await buildStep.readAsString(assetId);
+      final configName = configFile.getField('configName')?.toStringValue();
+      final code =
+          generateCodeForFile(filePath, classElement, jsonString, configName);
       buffer.write(code);
     }
     return buffer.toString();
   }
 
-  String generateCodeForFile(DartObject configFile, ClassElement classElement) {
-    final filePath = configFile.getField('path')?.toStringValue();
+  String generateCodeForFile(String filePath, ClassElement classElement,
+      String jsonString, String configName) {
     if (filePath == null) {
       throw 'configFiles must have a valid path and configName parameter! Offending Element: $classElement';
     }
-    currentConfigFile = File(filePath);
-    if (!currentConfigFile.existsSync()) {
-      throw "$filePath isn't readable!";
-    }
-    final configAsString = File(filePath).readAsStringSync();
-    final Map<String, dynamic> parsedConfig = json.decode(configAsString);
+    try {
+      final Map<String, dynamic> parsedConfig = json.decode(jsonString);
 
-    final configName = configFile.getField('configName')?.toStringValue();
-    if (configName == null) {
-      throw 'configFiles must have a valid path and configName parameter! Offending Element: $classElement';
+      if (configName == null) {
+        throw 'configFiles must have a valid path and configName parameter! Offending Element: $classElement';
+      }
+      return generateField(configName, classElement, parsedConfig, filePath);
+    } on FormatException catch (e) {
+      print("invalid json for file $filePath!");
+      rethrow;
     }
-    return generateField(configName, classElement, parsedConfig);
   }
 
   String generateField(String variableName, ClassElement classElement,
-      Map<String, dynamic> parsedConfig) {
+      Map<String, dynamic> parsedConfig, String filePath) {
     return """const $variableName = ${classElement.name}(
-  ${parsedConfig.entries.map((pair) => generateValueForVariable(classElement, pair.key, pair.value)).join(",")}
+  ${parsedConfig.entries.map((pair) => generateValueForVariable(classElement, pair.key, pair.value, filePath)).join(",")}
   );""";
   }
 
-  String generateValueForVariable(
-      ClassElement element, String variableName, dynamic rawValue) {
+  String generateValueForVariable(ClassElement element, String variableName,
+      dynamic rawValue, String filePath) {
     final field = element.getField(variableName.trim());
     if (field == null) {
-      throw ('field $variableName for class $element, but it was set in your config json file $currentConfigFile!');
+      throw ('field $variableName not found for class $element, but it was set in your config json file $filePath!');
     }
     String value;
     final fieldElement = field.type.element;
@@ -86,7 +97,7 @@ class ConfigGenerator extends GeneratorForAnnotation<BuildConfiguration> {
       }
       value = rawValue.toString();
     } else if (fieldElement is ClassElement && fieldElement.isEnum) {
-      value = '${field.type.name}.$rawValue';
+      value = '${field.type.getDisplayString()}.$rawValue';
     } else {
       throw 'unsupported type: ${field.type}';
     }

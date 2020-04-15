@@ -8,15 +8,10 @@ environment:
   sdk: ">=2.1.0 <3.0.0"
 
 dependencies:
+  glob: ^1.2.0
 
 dev_dependencies:
   build_runner: ^1.6.7
   config_builder:
     path: ../
-
-# For information on the generic Dart part of this file, see the
-# following page: https://dart.dev/tools/pub/pubspec
-
-# The following section is specific to Flutter.
-flutter:
 
