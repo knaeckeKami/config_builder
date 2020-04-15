@@ -1,7 +1,4 @@
 import 'dart:convert';
-import 'dart:io';
-
-import 'package:analyzer/dart/constant/value.dart';
 import 'package:analyzer/dart/element/element.dart';
 import 'package:build/build.dart';
 import 'package:config_builder/annotations/config.dart';
@@ -57,7 +54,7 @@ class ConfigGenerator extends GeneratorForAnnotation<BuildConfiguration> {
         throw 'configFiles must have a valid path and configName parameter! Offending Element: $classElement';
       }
       return generateField(configName, classElement, parsedConfig, filePath);
-    } on FormatException catch (e) {
+    } on FormatException {
       print("invalid json for file $filePath!");
       rethrow;
     }

@@ -1,3 +1,7 @@
+## [1.0.1]
+
+- lint fixes
+
 ## [1.0.0]
 
 - Breaking Change: Now use BuiltStep.findAssets to let build_runner watch the consumed files for changes!
