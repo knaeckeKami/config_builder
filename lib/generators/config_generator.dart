@@ -94,7 +94,8 @@ class ConfigGenerator extends GeneratorForAnnotation<BuildConfiguration> {
       }
       value = rawValue.toString();
     } else if (fieldElement is ClassElement && fieldElement.isEnum) {
-      value = '${field.type.getDisplayString()}.$rawValue';
+      //TODO add nullability support
+      value = '${field.type.getDisplayString(withNullability: false)}.$rawValue';
     } else {
       throw 'unsupported type: ${field.type}';
     }
