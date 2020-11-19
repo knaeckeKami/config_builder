@@ -8,5 +8,8 @@ class ConfigFile {
   final String configName;
   final String path;
 
-  const ConfigFile({this.configName, this.path});
+  const ConfigFile({
+    required this.configName,
+    required this.path,
+  });
 }

@@ -42,8 +42,8 @@ class ConfigGenerator extends GeneratorForAnnotation<BuildConfiguration> {
     return buffer.toString();
   }
 
-  String generateCodeForFile(String filePath, ClassElement classElement,
-      String jsonString, String configName) {
+  String generateCodeForFile(String? filePath, ClassElement classElement,
+      String jsonString, String? configName) {
     if (filePath == null) {
       throw 'configFiles must have a valid path and configName parameter! Offending Element: $classElement';
     }
@@ -69,15 +69,14 @@ class ConfigGenerator extends GeneratorForAnnotation<BuildConfiguration> {
 
   String generateValueForVariable(ClassElement element, String variableName,
       dynamic rawValue, String filePath) {
-    final field = element.getField(variableName.trim());
+    final FieldElement? field = element.getField(variableName.trim());
     if (field == null) {
       throw ('field $variableName not found for class $element, but it was set in your config json file $filePath!');
     }
     String value;
     final fieldElement = field.type.element;
     if (field.type.isDartCoreString) {
-      //TODO properly escape the string
-      value = 'r"""' + rawValue.toString() + '"""';
+      value =  asDartLiteral(rawValue.toString());
     } else if (field.type.isDartCoreBool) {
       if (rawValue is! bool) {
         throw '$variableName should be a bool, but got $rawValue (${rawValue.runtimeType})';
@@ -101,4 +100,18 @@ class ConfigGenerator extends GeneratorForAnnotation<BuildConfiguration> {
     }
     return '$variableName:$value';
   }
+}
+
+
+String asDartLiteral(String value) {
+  final escaped = escapeForDart(value);
+  return "'$escaped'";
+}
+
+String escapeForDart(String value) {
+  return value
+      .replaceAll("'", "\\'")
+      .replaceAll('\$', '\\\$')
+      .replaceAll('\r', '\\r')
+      .replaceAll('\n', '\\n');
 }

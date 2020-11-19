@@ -15,5 +15,9 @@ class Config {
   final Environment environment;
   final double number;
 
-  const Config({this.name, this.value, this.environment, this.number});
+  const Config(
+      {required this.name,
+      required this.value,
+      required this.environment,
+      required this.number});
 }
