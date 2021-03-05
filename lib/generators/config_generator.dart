@@ -7,22 +7,25 @@ import 'package:glob/glob.dart';
 
 class ConfigGenerator extends GeneratorForAnnotation<BuildConfiguration> {
   @override
-  Future<String> generateForAnnotatedElement(
-      Element element, ConstantReader annotation, BuildStep buildStep) async {
-    if (element is! ClassElement) {
-      throw 'This annotation can only be used on classes. Offending Element: $element';
+  Future<String> generateForAnnotatedElement(Element classElement,
+      ConstantReader annotation, BuildStep buildStep) async {
+    if (classElement is! ClassElement) {
+      throw 'This annotation can only be used on classes. Offending Element: $classElement';
     }
-    final classElement = element as ClassElement;
+
     final configList = annotation.read('configFiles')?.listValue;
 
     if (configList == null || configList.isEmpty) {
-      throw 'configFiles list cannot be empty!  Offending Element: $element';
+      throw 'configFiles list cannot be empty!  Offending Element: $classElement';
     }
 
     final buffer = StringBuffer();
 
     for (final configFile in configList) {
       final filePath = configFile.getField('path')?.toStringValue();
+      if (filePath == null) {
+        throw "error: path was null in ${configFile} from at annotation ${annotation}";
+      }
       final assets = await buildStep
           .findAssets(Glob(filePath, caseSensitive: true))
           .toList();
@@ -76,7 +79,7 @@ class ConfigGenerator extends GeneratorForAnnotation<BuildConfiguration> {
     String value;
     final fieldElement = field.type.element;
     if (field.type.isDartCoreString) {
-      value =  asDartLiteral(rawValue.toString());
+      value = asDartLiteral(rawValue.toString());
     } else if (field.type.isDartCoreBool) {
       if (rawValue is! bool) {
         throw '$variableName should be a bool, but got $rawValue (${rawValue.runtimeType})';
@@ -94,14 +97,14 @@ class ConfigGenerator extends GeneratorForAnnotation<BuildConfiguration> {
       value = rawValue.toString();
     } else if (fieldElement is ClassElement && fieldElement.isEnum) {
       //TODO add nullability support
-      value = '${field.type.getDisplayString(withNullability: false)}.$rawValue';
+      value =
+          '${field.type.getDisplayString(withNullability: false)}.$rawValue';
     } else {
       throw 'unsupported type: ${field.type}';
     }
     return '$variableName:$value';
   }
 }
-
 
 String asDartLiteral(String value) {
   final escaped = escapeForDart(value);

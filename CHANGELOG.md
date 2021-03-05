@@ -1,3 +1,7 @@
+## [2.0.0]
+
+- null safety
+
 ## [1.1.0]
 
 - update dependencies
