@@ -13,9 +13,9 @@ class ConfigGenerator extends GeneratorForAnnotation<BuildConfiguration> {
       throw 'This annotation can only be used on classes. Offending Element: $classElement';
     }
 
-    final configList = annotation.read('configFiles')?.listValue;
+    final configList = annotation.read('configFiles').listValue;
 
-    if (configList == null || configList.isEmpty) {
+    if (configList.isEmpty) {
       throw 'configFiles list cannot be empty!  Offending Element: $classElement';
     }
 
