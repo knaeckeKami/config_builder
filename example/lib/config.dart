@@ -14,10 +14,34 @@ class Config {
   final int value;
   final Environment environment;
   final double number;
+  final List<String> stringList;
+  final List<List<int>> nestedIntList;
+  final List<AnotherNestedConfig> nestedObjectList;
 
-  const Config(
-      {required this.name,
-      required this.value,
-      required this.environment,
-      required this.number});
+  final NestedConfig nestedConfig;
+
+  const Config({
+    required this.name,
+    required this.value,
+    required this.environment,
+    required this.number,
+    required this.stringList,
+    required this.nestedIntList,
+    required this.nestedConfig,
+    required this.nestedObjectList
+  });
+}
+
+class NestedConfig {
+  final int nestedInt;
+  final AnotherNestedConfig evenMoreNestedConfig;
+
+  const NestedConfig(
+      {required this.nestedInt, required this.evenMoreNestedConfig});
+}
+
+class AnotherNestedConfig {
+  final String value;
+
+  const AnotherNestedConfig({required this.value});
 }

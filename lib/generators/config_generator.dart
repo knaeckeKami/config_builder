@@ -1,5 +1,7 @@
 import 'dart:convert';
 import 'package:analyzer/dart/element/element.dart';
+import 'package:analyzer/dart/element/nullability_suffix.dart';
+import 'package:analyzer/dart/element/type.dart';
 import 'package:build/build.dart';
 import 'package:config_builder/annotations/config.dart';
 import 'package:source_gen/source_gen.dart';
@@ -76,34 +78,82 @@ class ConfigGenerator extends GeneratorForAnnotation<BuildConfiguration> {
     if (field == null) {
       throw ('field $variableName not found for class $element, but it was set in your config json file $filePath!');
     }
-    String value;
-    final fieldElement = field.type.element;
-    if (field.type.isDartCoreString) {
-      value = asDartLiteral(rawValue.toString());
-    } else if (field.type.isDartCoreBool) {
-      if (rawValue is! bool) {
-        throw '$variableName should be a bool, but got $rawValue (${rawValue.runtimeType})';
-      }
-      value = rawValue.toString();
-    } else if (field.type.isDartCoreInt) {
-      if (rawValue is! int) {
-        throw '$variableName should be an int, but got $rawValue (${rawValue.runtimeType})';
-      }
-      value = rawValue.toString();
-    } else if (field.type.isDartCoreDouble) {
-      if (rawValue is! num) {
-        throw '$variableName should be a double, but got $rawValue (${rawValue.runtimeType})';
-      }
-      value = rawValue.toString();
-    } else if (fieldElement is ClassElement && fieldElement.isEnum) {
-      //TODO add nullability support
-      value =
-          '${field.type.getDisplayString(withNullability: false)}.$rawValue';
-    } else {
-      throw 'unsupported type: ${field.type}';
-    }
-    return '$variableName:$value';
+    final fieldType = field.type;
+    final fieldElement = fieldType.element!;
+
+    final dartLiteral = jsonValueToDartLiteralGivenType(
+      type: fieldType,
+      rawValue: rawValue,
+    );
+    return '$variableName:$dartLiteral';
   }
+}
+
+String jsonValueToDartLiteralGivenType(
+    {required DartType type,
+    required dynamic rawValue,
+    String? diagnosticVariableName}) {
+  String value;
+  final surroundingElement = type.element;
+  if (type.isDartCoreString) {
+    value = asDartLiteral(rawValue.toString());
+  } else if (type.isDartCoreBool) {
+    if (rawValue is! bool) {
+      throw '$diagnosticVariableName should be a bool, but got $rawValue (${rawValue.runtimeType})';
+    }
+    value = rawValue.toString();
+  } else if (type.isDartCoreInt) {
+    if (rawValue is! int) {
+      throw '$diagnosticVariableName should be an int, but got $rawValue (${rawValue.runtimeType})';
+    }
+    value = rawValue.toString();
+  } else if (type.isDartCoreDouble) {
+    if (rawValue is! num) {
+      throw '$diagnosticVariableName should be a double, but got $rawValue (${rawValue.runtimeType})';
+    }
+    value = rawValue.toString();
+  } else if (surroundingElement is ClassElement && surroundingElement.isEnum) {
+    value = '${type.getDisplayString(withNullability: true)}.$rawValue';
+  } else if (type.isDartCoreList) {
+    if (rawValue is! List) {
+      throw '$diagnosticVariableName should be a List, but got $rawValue (${rawValue.runtimeType})';
+    }
+    if (type is! ParameterizedType) {
+      throw '$type should be a List, but got $rawValue (${rawValue.runtimeType})';
+    }
+    value = generateListValue(type, rawValue);
+  } else if (rawValue is Map<String, dynamic>) {
+    value = generateNestedObjectParams(type, rawValue);
+  } else {
+    throw 'unsupported type: ${type} for $diagnosticVariableName in value $rawValue';
+  }
+  return value;
+}
+
+String generateNestedObjectParams(
+    DartType type, Map<String, dynamic> rawValue) {
+  final constructor = (type.element as ClassElement).constructors.single;
+  final contructorName = type.element!.displayName;
+  return contructorName +
+      '(' +
+      constructor.parameters
+          .map((e) => "${e.name}: ${jsonValueToDartLiteralGivenType(
+                type: e.type,
+                rawValue: rawValue[e.name],
+                diagnosticVariableName: e.name,
+              )},")
+          .join() +
+      ')';
+}
+
+String generateListValue(ParameterizedType type, List rawValue) {
+  final listDartType = type.typeArguments.single;
+
+  List<String> dartValues = [
+    for (final item in rawValue)
+      jsonValueToDartLiteralGivenType(type: listDartType, rawValue: item) + ","
+  ];
+  return '[' + dartValues.join() + ']';
 }
 
 String asDartLiteral(String value) {

@@ -1,3 +1,8 @@
+## [2.2.0-alpha.1]
+
+- add support for Lists
+- add support for nested objects
+
 ## [2.1.0]
 
 - update dependencies

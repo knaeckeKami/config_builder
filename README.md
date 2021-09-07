@@ -13,7 +13,7 @@ Build your app config via code generation from .json files. Type-Safe and no unn
 - Avoid storing your configuration in dart files
 - Avoid reading config files from disk and parsing them at app start
 - Type safe
-- Supports String, bool, int, double and Enums
+- Supports String, bool, int, double, Enums, Lists of these types, and nested objects of these types (see example)
 
 
 ## How to use
@@ -44,8 +44,10 @@ class Config{
 }
 ```
 
-Make sure the config-class has a `const` constructor with exclusively named parameters.
+Make sure the config-class has exactly one `const` constructor with exclusively required, named parameters.
 The generated code will assume that such a constructor exists.
+
+If you use nested config classes, they also must have exactly one constructor exclusively required, named parameters.
 
 Add your configuration-json file (must be saved in the lib/ directory):
 
@@ -60,11 +62,11 @@ Add your configuration-json file (must be saved in the lib/ directory):
 
 Run the code generation via 
 
-    flutter packages pub run build_runner build
+    flutter pub run build_runner build
 (flutter projects)    
 or
  
-     pub run build_runner build 
+     dart run build_runner build 
 (dart-only projects)   
     
 Now you can access your config object for example via different entry points in your app:
